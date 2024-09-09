@@ -18,23 +18,6 @@
                 }
             },
             "cwd": "${workspaceFolder}",
-        },
-        {
-            "label": "run",
-            "type": "process",
-            "cargo": {
-                "args": [
-                    "run",
-                    "--bin=unbug_basic_example",
-                    "--package=unbug_basic_example",
-                    "--features=dev_debug"
-                ],
-                "filter": {
-                    "name": "unbug_basic_example",
-                    "kind": "bin"
-                }
-            },
-            "cwd": "${workspaceFolder}"
         }
     ]
 }
