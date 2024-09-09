@@ -1,0 +1,11 @@
+[package]
+name = "unbug"
+version = "0.1.0"
+edition = "2021"
+
+[features]
+default = []
+enable = []
+
+[dependencies]
+tracing = "0.1"
