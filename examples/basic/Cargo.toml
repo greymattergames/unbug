@@ -1,0 +1,15 @@
+[package]
+name = "unbug_basic_example"
+version = "1.0.0"
+edition = "2021"
+publish = false
+
+[features]
+default = []
+dev_debug = [
+    "unbug/enable"
+]
+
+[dependencies]
+unbug = { path = "../../" }
+tracing-subscriber = "0.3"

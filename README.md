@@ -16,6 +16,8 @@ This crate's internals are disabled by default, there are shims provided so brea
 >
 > Additonally, debugging may not land on the macro statements themselves. This can have the consequence that the debgger may pause on an internal module. To avoid this, `return` or `continue` immediately following a macro invocation. Alternatively, use your debugger's "step-out" feature until you reenter the scope of your code.
 
+Error messages are logged when used in conjuction with [Tracing](https://github.com/tokio-rs/tracing)
+
 ## Examples
 
 ```rust
@@ -34,6 +36,9 @@ for i in 0..5 {
 
 let my_var: Option<()> = None;
 
+// Use the tracing_subscriber crate to log error messages from the fail! and fail_always! macros.
+tracing_subscriber::fmt::init();
+
 let Some(out_var) = my_var else {
     // fail! pauses and logs an error message, will also only trigger once
     // fail! will continue to log in non-debug builds
@@ -48,7 +53,10 @@ let Some(other_out_var) = my_var else {
 };
 ```
 
-## Installation
+## Setup
+
+Prepare your environment for debugging Rust.
+> If you are using VSCode you will need the [Rust Analyzer](https://marketplace.visualstudio.com/items?itemName=rust-lang.rust-analyzer) and [Code LLDB](https://marketplace.visualstudio.com/items?itemName=vadimcn.vscode-lldb) extensions. [See Microsoft's Documentation on Rust Debugging in VSCode](https://code.visualstudio.com/docs/languages/rust#_debugging).
 
 __1.__ Enable Nightly Rust:
 ```bash

@@ -2,6 +2,14 @@
 name = "unbug"
 version = "0.1.0"
 edition = "2021"
+description = "A crate to programmatically invoke debugging breakpoints with helping macros"
+repository = "https://github.com/greymattergames/unbug"
+license = "MIT OR Apache-2.0"
+keywords = ["debug", "debugging", "ensure", "assert", "breakpoint"]
+authors = [
+  "Brian Jesse <brian.jesse@gmail.com>",
+]
+categories = ["development-tools::debugging"]
 
 [features]
 default = []
@@ -9,3 +17,12 @@ enable = []
 
 [dependencies]
 tracing = "0.1"
+
+[[example]]
+name = "basic"
+path = "examples/basic/"
+
+[workspace]
+members = [
+    "examples/*",
+]
