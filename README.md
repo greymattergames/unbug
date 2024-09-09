@@ -34,7 +34,6 @@ for i in 0..5 {
 
 let my_var: Option<()> = None;
 
-// the `fail!` macro compliments the guards pattern
 let Some(out_var) = my_var else {
     // fail! pauses and logs an error message, will also only trigger once
     // fail! will continue to log in non-debug builds
@@ -42,7 +41,6 @@ let Some(out_var) = my_var else {
     return;
 };
 
-// the `fail!` macro compliments the guards pattern
 let Some(other_out_var) = my_var else {
     // fail_always! will do the same, but will trigger every time
     unbug::fail_always!("failed to get some option");
