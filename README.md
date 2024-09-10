@@ -89,7 +89,7 @@ __3.__ enable the core_intrinsics feature in the root of your crate (`main.rs` o
 
 __4.__ Pass your feature flag to cargo during your debug build.
 
-Sample VSCode `launch.json` with LLDB:
+Sample VSCode `launch.json` with LLDB (Linux/Mac):
 ```json
 {
     "version": "0.2.0",
@@ -97,7 +97,7 @@ Sample VSCode `launch.json` with LLDB:
         {
             "type": "lldb",
             "request": "launch",
-            "name": "Debug",
+            "name": "LLDB Debug (nightly)",
             "cargo": {
                 "args": [
                     "build",
@@ -119,6 +119,51 @@ Sample VSCode `launch.json` with LLDB:
     ]
 }
 ```
+
+Sample VSCode `launch.json` with msvc (Windows):
+```json
+{
+    "version": "0.2.0",
+    "configurations": [
+		{
+            "name": "Windows debug (nightly)",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceRoot}/target/debug/unbug_basic_example.exe",
+            "stopAtEntry": false,
+            "cwd": "${workspaceRoot}",
+            "preLaunchTask": "win_build_debug"
+        }
+    ]
+}
+```
+
+and complimentary `tasks.json`
+```json
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "cargo",
+			"command": "build",
+			"args": [
+				"--bin=my_project",
+				"--package=my_project",
+				"--features=my_debug_feature"
+			],
+			"problemMatcher": [
+				"$rustc"
+			],
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"label": "win_build_debug",		
+		}
+	]
+}
+```
+
 
 ## License
 
