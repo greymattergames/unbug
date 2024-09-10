@@ -1,3 +1,4 @@
+
 # Unbug
 
 A crate to programmatically invoke debugging breakpoints with helping macros.
@@ -20,6 +21,8 @@ Error messages are logged when used in conjuction with [Tracing](https://github.
 
 ## Examples
 
+# [![VSCode debugging example](https://raw.githubusercontent.com/greymattergames/unbug/master/assets/debug.png)](https://github.com/greymattergames/unbug/blob/master/examples/basic/src/main.rs)
+
 ```rust
 // trigger the debugger
 unbug::breakpoint!();
@@ -39,12 +42,12 @@ let my_var: Option<()> = None;
 // Use the tracing_subscriber crate to log error messages from the fail! and fail_always! macros.
 tracing_subscriber::fmt::init();
 
-let Some(out_var) = my_var else {
+if out_var == None {
     // fail! pauses and logs an error message, will also only trigger once
     // fail! will continue to log in non-debug builds
     unbug::fail!("failed to get some option");
     return;
-};
+}
 
 let Some(other_out_var) = my_var else {
     // fail_always! will do the same, but will trigger every time

@@ -1,10 +1,13 @@
+#![allow(internal_features)]
 #![cfg_attr(all(debug_assertions, feature = "dev_debug"), feature(core_intrinsics))]
 
 fn fail_once(in_opt: Option<()>) {
-    let Some(_out_var) = in_opt else {
-        unbug::fail!("fail error message");
+    if in_opt == None {
+        // fail! pauses and logs an error message, will also only trigger once
+        // fail! will continue to log in non-debug builds
+        unbug::fail!("failed to get some option");
         return;
-    };
+    }
 }
 
 fn fail_always(in_opt: Option<()>) {

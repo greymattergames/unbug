@@ -8,9 +8,10 @@ documentation = "https://docs.rs/unbug"
 license = "MIT OR Apache-2.0"
 keywords = ["debug", "debugging", "ensure", "assert", "breakpoint"]
 authors = [
-  "Brian Jesse <brian.jesse@gmail.com>",
+  "Brian Jesse <brian@greymattergames.net>",
 ]
 categories = ["development-tools::debugging"]
+exclude = [".vscode/", "assets/"]
 
 [features]
 default = []
