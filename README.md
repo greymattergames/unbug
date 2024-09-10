@@ -42,16 +42,17 @@ let my_var: Option<()> = None;
 // Use the tracing_subscriber crate to log error messages from the fail! and fail_always! macros.
 tracing_subscriber::fmt::init();
 
-if out_var == None {
+if my_var == None {
     // fail! pauses and logs an error message, will also only trigger once
     // fail! will continue to log in non-debug builds
-    unbug::fail!("failed to get some option");
+    unbug::fail!("failed to get my_var");
     return;
 }
 
 let Some(other_out_var) = my_var else {
     // fail_always! will do the same, but will trigger every time
-    unbug::fail_always!("failed to get some option");
+    // fail! and fail_always! can be formatted just like error! from the Tracing crate
+    unbug::fail_always!("failed to get my_var: {:?}", my_var);
     return;
 };
 ```

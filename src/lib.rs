@@ -111,6 +111,8 @@ macro_rules! ensure {
 ///
 /// Requires Nightly Rust
 ///
+/// Requires Tracing logging for error messages
+///
 /// # Examples
 ///
 /// ```rust
@@ -145,7 +147,7 @@ macro_rules! fail_always {
 ///
 /// Requires Nightly Rust
 ///
-/// Requires Tracing logging
+/// Requires Tracing logging for error messages
 ///
 /// # Examples
 ///
