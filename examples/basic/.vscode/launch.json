@@ -2,7 +2,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Debug (nightly)",
+            "name": "LLDB debug (nightly)",
             "type": "lldb",
             "request": "launch",
             "cargo": {
@@ -18,6 +18,15 @@
                 }
             },
             "cwd": "${workspaceFolder}",
+        },
+		{
+            "name": "Windows debug (nightly)",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceRoot}/target/debug/unbug_basic_example.exe",
+            "stopAtEntry": false,
+            "cwd": "${workspaceRoot}",
+            "preLaunchTask": "win_build_debug"
         }
     ]
 }
