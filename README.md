@@ -1,5 +1,9 @@
-
-# Unbug
+<p align="center">
+    <a href="https://docs.rs/unbug">
+        <img src="assets/unbug.svg" width="200" alt="Unbug logo"/>
+    </a>
+</p>
+<h1 align="center">Unbug</h1>
 
 A crate to programmatically invoke debugging breakpoints with helping macros.
 
@@ -27,40 +31,34 @@ Error messages are logged when used in conjuction with [Tracing](https://github.
 // trigger the debugger
 unbug::breakpoint!();
 
-let some_bool = false;
-
 for i in 0..5 {
     // ensure! will only trigger the debugger once when the expression argument is false
-    unbug::ensure!(some_bool);
+    unbug::ensure!(false);
 
-    // ensure_always! will trigger the debugger every time
-    unbug::ensure_always!(some_bool);
-}
+    // ensure_always! will trigger the debugger every time the expression argument is false
+    unbug::ensure_always!(i % 2 == 0);
 
-let my_var: Option<()> = None;
+    // Use the tracing_subscriber crate to log error messages from the fail! and fail_always! macros.
+    tracing_subscriber::fmt::init();
 
-// Use the tracing_subscriber crate to log error messages from the fail! and fail_always! macros.
-tracing_subscriber::fmt::init();
-
-if my_var == None {
     // fail! pauses and logs an error message, will also only trigger once
-    // fail! will continue to log in non-debug builds
-    unbug::fail!("failed to get my_var");
-    return;
+    unbug::fail!("fail! will continue to log in non-debug builds");
+
+    if i < 3 {
+        unbug::fail!("fail! and fail_always! can be formatted just like error! from the Tracing crate {}", i);
+    }
+
+    let Some(_out_var) = some_option else {
+        unbug::fail_always!("fail_always! will trigger every time");
+    };
 }
 
-let Some(other_out_var) = my_var else {
-    // fail_always! will do the same, but will trigger every time
-    // fail! and fail_always! can be formatted just like error! from the Tracing crate
-    unbug::fail_always!("failed to get my_var: {:?}", my_var);
-    return;
-};
 ```
 
 ## Setup
 
 Prepare your environment for debugging Rust.
-> If you are using VSCode you will need the [Rust Analyzer](https://marketplace.visualstudio.com/items?itemName=rust-lang.rust-analyzer) and [Code LLDB](https://marketplace.visualstudio.com/items?itemName=vadimcn.vscode-lldb) extensions. [See Microsoft's Documentation on Rust Debugging in VSCode](https://code.visualstudio.com/docs/languages/rust#_debugging).
+> If you are using VSCode you will need the [Rust Analyzer](https://marketplace.visualstudio.com/items?itemName=rust-lang.rust-analyzer) and [Code LLDB](https://marketplace.visualstudio.com/items?itemName=vadimcn.vscode-lldb)  (Linux/Mac) or the [C/C++](https://marketplace.visualstudio.com/items?itemName=ms-vscode.cpptools) (Windows) extensions. [See Microsoft's Documentation on Rust Debugging in VSCode](https://code.visualstudio.com/docs/languages/rust#_debugging).
 
 __1.__ Enable Nightly Rust:
 ```bash
@@ -158,7 +156,7 @@ and complimentary `tasks.json`
 				"kind": "build",
 				"isDefault": true
 			},
-			"label": "win_build_debug",
+			"label": "win_build_debug"
 		}
 	]
 }
