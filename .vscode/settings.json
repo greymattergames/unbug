@@ -1,0 +1,8 @@
+{
+    // Project-wide tabs and spaces configuration
+    "editor.tabSize": 4,
+    "editor.insertSpaces": true,
+
+    // Ensure newlines at the end of files for git
+    "files.insertFinalNewline": true
+}

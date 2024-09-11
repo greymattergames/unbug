@@ -158,7 +158,7 @@ and complimentary `tasks.json`
 				"kind": "build",
 				"isDefault": true
 			},
-			"label": "win_build_debug",		
+			"label": "win_build_debug",
 		}
 	]
 }

@@ -19,7 +19,7 @@
             },
             "cwd": "${workspaceFolder}",
         },
-		{
+        {
             "name": "Windows debug (nightly)",
             "type": "cppvsdbg",
             "request": "launch",
