@@ -3,16 +3,9 @@
 
 use unbug::prelude::*;
 
-fn fail_once(in_opt: Option<()>) {
-    if in_opt == None {
-        fail!("failed to get in_opt");
-        return;
-    }
-}
-
-fn fail_always(in_opt: Option<()>) {
+fn try_some_option(in_opt: Option<()>) {
     let Some(_out_var) = in_opt else {
-        fail_always!("failed to get in_opt: {:?}", in_opt);
+        fail_always!("fail_always! can also be formatted - in_opt was: {:?}", in_opt);
         return;
     };
 }
@@ -22,15 +15,14 @@ fn main() {
 
     breakpoint!();
 
-    let _some_bool = false;
+    for i in 0..5 {
+        ensure!(false);
+        ensure_always!(i % 2 == 0);
 
-    for _i in 0..5 {
-        ensure!(_some_bool);
-        ensure_always!(_some_bool);
+        fail!("fail! will happen only once");
+        fail!("fail! can also format output - i was: {}", i);
+        fail_always!("fail_always! will happen multiple times");
 
-        fail!("standalone fail");
-
-        fail_once(None);
-        fail_always(None);
+        try_some_option(None);
     }
 }
