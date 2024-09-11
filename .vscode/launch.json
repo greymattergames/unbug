@@ -19,7 +19,7 @@
             },
             "cwd": "${workspaceFolder}/examples/basic"
         },
-		{
+        {
             "name": "Windows debug example basic (nightly)",
             "type": "cppvsdbg",
             "request": "launch",

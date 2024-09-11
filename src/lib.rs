@@ -106,7 +106,7 @@ macro_rules! ensure {
 /// When disabled, will log an error
 ///
 /// Will log on every execution
-/// 
+///
 /// arguments are processed by tracing's error! macro
 ///
 /// Requires Nightly Rust
@@ -142,7 +142,7 @@ macro_rules! fail_always {
 /// When disabled, will log an error
 ///
 /// Will log once per program run
-/// 
+///
 /// arguments are processed by Tracing's error! macro
 ///
 /// Requires Nightly Rust
@@ -163,11 +163,5 @@ macro_rules! fail {
 }
 
 pub mod prelude {
-    pub use super::{
-        breakpoint,
-        ensure,
-        ensure_always,
-        fail,
-        fail_always,
-    };
+    pub use super::{breakpoint, ensure, ensure_always, fail, fail_always};
 }

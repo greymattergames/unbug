@@ -1,22 +1,22 @@
 {
-	"version": "2.0.0",
-	"tasks": [
-		{
-			"type": "cargo",
-			"command": "build",
-			"args": [
-				"--bin=unbug_basic_example",
-				"--package=unbug_basic_example",
-				"--features=dev_debug"
-			],
-			"problemMatcher": [
-				"$rustc"
-			],
-			"group": {
-				"kind": "build",
-				"isDefault": true
-			},
-			"label": "win_build_debug",		
-		}
-	]
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "type": "cargo",
+            "command": "build",
+            "args": [
+                "--bin=unbug_basic_example",
+                "--package=unbug_basic_example",
+                "--features=dev_debug"
+            ],
+            "problemMatcher": [
+                "$rustc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "label": "win_build_debug",
+        }
+    ]
 }
