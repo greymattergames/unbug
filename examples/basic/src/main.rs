@@ -1,5 +1,11 @@
-#![allow(internal_features)]
-#![cfg_attr(all(debug_assertions, feature = "dev_debug"), feature(core_intrinsics))]
+#![cfg_attr(
+    all(
+        debug_assertions,
+        feature = "dev_debug",
+    ),
+    feature(core_intrinsics),
+    allow(internal_features),
+)]
 
 use unbug::prelude::*;
 

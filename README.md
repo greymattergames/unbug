@@ -1,6 +1,6 @@
 <p align="center">
-    <a href="https://docs.rs/unbug">
-        <img src="assets/unbug.svg" width="200" alt="Unbug logo"/>
+    <a target="_blank" href="https://docs.rs/unbug">
+        <img src="https://raw.githubusercontent.com/greymattergames/unbug/main/assets/unbug.svg" width="200" alt="Unbug logo"/>
     </a>
 </p>
 <h1 align="center">Unbug</h1>
@@ -32,20 +32,26 @@ Error messages are logged when used in conjuction with [Tracing](https://github.
 unbug::breakpoint!();
 
 for i in 0..5 {
-    // ensure! will only trigger the debugger once when the expression argument is false
+    // ensure! will only trigger the debugger once
+    // when the expression argument is false
     unbug::ensure!(false);
 
-    // ensure_always! will trigger the debugger every time the expression argument is false
+    // ensure_always! will trigger the debugger every time
+    // when the expression argument is false
     unbug::ensure_always!(i % 2 == 0);
 
-    // Use the tracing_subscriber crate to log error messages from the fail! and fail_always! macros.
+    // Use the tracing_subscriber crate to log error messages
+    // from the fail! and fail_always! macros.
     tracing_subscriber::fmt::init();
 
-    // fail! pauses and logs an error message, will also only trigger once
+    // fail! pauses and logs an error message
+    // will also only trigger once
     unbug::fail!("fail! will continue to log in non-debug builds");
 
     if i < 3 {
-        unbug::fail!("fail! and fail_always! can be formatted just like error! from the Tracing crate {}", i);
+        // fail! and fail_always! can be formatted just like error!
+        // from the Tracing crate
+        unbug::fail!("{}", i);
     }
 
     let Some(_out_var) = some_option else {
@@ -55,7 +61,7 @@ for i in 0..5 {
 
 ```
 
-## Setup
+## Usage
 
 Prepare your environment for debugging Rust.
 > If you are using VSCode you will need the [Rust Analyzer](https://marketplace.visualstudio.com/items?itemName=rust-lang.rust-analyzer) and [Code LLDB](https://marketplace.visualstudio.com/items?itemName=vadimcn.vscode-lldb)  (Linux/Mac) or the [C/C++](https://marketplace.visualstudio.com/items?itemName=ms-vscode.cpptools) (Windows) extensions. [See Microsoft's Documentation on Rust Debugging in VSCode](https://code.visualstudio.com/docs/languages/rust#_debugging).
@@ -77,17 +83,26 @@ my_debug_feature = [
 ]
 ```
 
-__3.__ enable the core_intrinsics feature in the root of your crate (`main.rs` or `lib.rs`)
+__3.__ enable the core_intrinsics feature in the root of your crate (`src/main.rs` or `src/lib.rs`)
 
-`main.rs`:
+`src/main.rs`:
 ```rust
-#![cfg_attr(all(debug_assertions, feature = "my_debug_feature"), feature(core_intrinsics))]
+#![cfg_attr(
+    // this configuration will conditionally activate core_intrinsics
+    // only when in a dev build and your debug feature is active
+    all(
+        debug_assertions,
+        feature = "my_debug_feature",
+    ),
+    feature(core_intrinsics),
+    // Optionally allow internal_features to suppress the warning
+    allow(internal_features),
+)]
 ```
-> *this configuration will only activate core_intrinsics for debug builds when your debug feature is active*
 
 __4.__ Pass your feature flag to cargo during your debug build.
 
-Sample VSCode `launch.json` with LLDB (Linux/Mac):
+Sample VSCode `.vscode/launch.json` with LLDB (Linux/Mac):
 ```json
 {
     "version": "0.2.0",
@@ -118,7 +133,7 @@ Sample VSCode `launch.json` with LLDB (Linux/Mac):
 }
 ```
 
-Sample VSCode `launch.json` with msvc (Windows):
+Sample VSCode `.vscode/launch.json` with msvc (Windows):
 ```json
 {
     "version": "0.2.0",
@@ -136,7 +151,7 @@ Sample VSCode `launch.json` with msvc (Windows):
 }
 ```
 
-and complimentary `tasks.json`
+and complimentary `.vscode/tasks.json`
 ```json
 {
 	"version": "2.0.0",
@@ -161,6 +176,12 @@ and complimentary `tasks.json`
 	]
 }
 ```
+
+__5.__ Select the debug launch configuration for your platform and start debugging
+
+In VSCode, open the "Run and Debug" panel from the left sidebar.
+
+launch configurations can be now found in the dropdown menu next to the green "Start Debugging" button.
 
 
 ## License
