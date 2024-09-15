@@ -63,12 +63,12 @@ macro_rules! breakpoint {
 #[macro_export]
 #[cfg(not(all(debug_assertions, feature = "enable")))]
 macro_rules! ensure_always {
-    ($expression:expr) => {};
+    ($expression: expr) => {};
 }
 #[macro_export]
 #[cfg(all(debug_assertions, feature = "enable"))]
 macro_rules! ensure_always {
-    ($expression:expr) => {
+    ($expression: expr) => {
         if !$expression {
             unbug::breakpoint!();
         }
@@ -89,12 +89,12 @@ macro_rules! ensure_always {
 #[macro_export]
 #[cfg(not(all(debug_assertions, feature = "enable")))]
 macro_rules! ensure {
-    ($expression:expr) => {};
+    ($expression: expr) => {};
 }
 #[macro_export]
 #[cfg(all(debug_assertions, feature = "enable"))]
 macro_rules! ensure {
-    ($expression:expr) => {
+    ($expression: expr) => {
         unbug::_internal::_once!(unbug::ensure_always!($expression))
     };
 }
@@ -122,15 +122,15 @@ macro_rules! ensure {
 #[macro_export]
 #[cfg(not(all(debug_assertions, feature = "enable")))]
 macro_rules! fail_always {
-    ($($arg:tt),+ $(,)?) => {
-        unbug::_internal::_error!($($arg),+);
+    ($($argument: tt),+ $(,)?) => {
+        unbug::_internal::_error!($($argument),+);
     };
 }
 #[macro_export]
 #[cfg(all(debug_assertions, feature = "enable"))]
 macro_rules! fail_always {
-    ($($arg:tt),+ $(,)?) => {
-        unbug::_internal::_error!($($arg),+);
+    ($($argument: tt),+ $(,)?) => {
+        unbug::_internal::_error!($($argument),+);
         unbug::breakpoint!();
     };
 }
@@ -157,8 +157,8 @@ macro_rules! fail_always {
 /// ```
 #[macro_export]
 macro_rules! fail {
-    ($($arg:tt),+ $(,)?) => {
-        unbug::_internal::_once!(unbug::fail_always!($($arg),+));
+    ($($argument: tt),+ $(,)?) => {
+        unbug::_internal::_once!(unbug::fail_always!($($argument),+));
     };
 }
 
