@@ -67,6 +67,14 @@ Prepare your environment for debugging Rust.
 > If you are using VSCode you will need the [Rust Analyzer](https://marketplace.visualstudio.com/items?itemName=rust-lang.rust-analyzer) and [Code LLDB](https://marketplace.visualstudio.com/items?itemName=vadimcn.vscode-lldb)  (Linux/Mac) or the [C/C++](https://marketplace.visualstudio.com/items?itemName=ms-vscode.cpptools) (Windows) extensions. [See Microsoft's Documentation on Rust Debugging in VSCode](https://code.visualstudio.com/docs/languages/rust#_debugging).
 
 __1.__ Enable Nightly Rust:
+
+You can set a workspace toolchain override by adding a `rust-toolchain.toml` file at the root of your project with the following contents:
+```toml
+[toolchain]
+channel = "nightly"
+```
+
+OR you can set cargo to default to nightly globally:
 ```bash
 rustup install nightly
 rustup default nightly
