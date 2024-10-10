@@ -70,7 +70,7 @@ macro_rules! ensure_always {
 macro_rules! ensure_always {
     ($expression: expr) => {
         if !$expression {
-            unbug::breakpoint!();
+            $crate::breakpoint!();
         }
     };
 }
@@ -95,7 +95,7 @@ macro_rules! ensure {
 #[cfg(all(debug_assertions, feature = "enable"))]
 macro_rules! ensure {
     ($expression: expr) => {
-        unbug::_internal::_once!(unbug::ensure_always!($expression))
+        $crate::_internal::_once!($crate::ensure_always!($expression))
     };
 }
 
@@ -123,15 +123,15 @@ macro_rules! ensure {
 #[cfg(not(all(debug_assertions, feature = "enable")))]
 macro_rules! fail_always {
     ($($argument: tt),+ $(,)?) => {
-        unbug::_internal::_error!($($argument),+);
+        $crate::_internal::_error!($($argument),+);
     };
 }
 #[macro_export]
 #[cfg(all(debug_assertions, feature = "enable"))]
 macro_rules! fail_always {
     ($($argument: tt),+ $(,)?) => {
-        unbug::_internal::_error!($($argument),+);
-        unbug::breakpoint!();
+        $crate::_internal::_error!($($argument),+);
+        $crate::breakpoint!();
     };
 }
 
@@ -158,7 +158,7 @@ macro_rules! fail_always {
 #[macro_export]
 macro_rules! fail {
     ($($argument: tt),+ $(,)?) => {
-        unbug::_internal::_once!(unbug::fail_always!($($argument),+));
+        $crate::_internal::_once!($crate::fail_always!($($argument),+));
     };
 }
 
