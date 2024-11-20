@@ -40,11 +40,46 @@ macro_rules! breakpoint {
     () => {};
 }
 #[macro_export]
-#[cfg(all(debug_assertions, feature = "enable"))]
+#[cfg(all(
+    any(target_arch = "x86", target_arch = "x86_64"),
+    debug_assertions,
+    feature = "enable"
+))]
 macro_rules! breakpoint {
     () => {
         unsafe {
-            std::intrinsics::breakpoint();
+            ::core::arch::asm!("int3;nop");
+        }
+    };
+}
+#[macro_export]
+#[cfg(all(
+    any(target_arch = "arm", target_arch = "aarch64"),
+    debug_assertions,
+    feature = "enable"
+))]
+macro_rules! breakpoint {
+    () => {
+        unsafe {
+            ::core::arch::asm!("brk #1");
+        }
+    };
+}
+#[macro_export]
+#[cfg(all(
+    not(any(
+        target_arch = "x86",
+        target_arch = "x86_64",
+        target_arch = "arm",
+        target_arch = "aarch64",
+    )),
+    debug_assertions,
+    feature = "enable"
+))]
+macro_rules! breakpoint {
+    () => {
+        unsafe {
+            ::std::intrinsics::breakpoint();
         }
     };
 }
