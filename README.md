@@ -35,6 +35,8 @@ for i in 0..5 {
     // ensure! will only trigger the debugger once
     // when the expression argument is false
     unbug::ensure!(false);
+    unbug::ensure!(false, "Ensure can take an optional log message");
+    unbug::ensure!(false, "{}", i);
 
     // ensure_always! will trigger the debugger every time
     // when the expression argument is false

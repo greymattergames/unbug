@@ -51,6 +51,8 @@ macro_rules! breakpoint {
 
 /// When enabled, will pause execution with a break point when expression is false
 ///
+/// Can optionally log error messages when the tracing crate is used
+///
 /// Will break on every execution
 ///
 /// Requires Nightly Rust
@@ -63,7 +65,7 @@ macro_rules! breakpoint {
 #[macro_export]
 #[cfg(not(all(debug_assertions, feature = "enable")))]
 macro_rules! ensure_always {
-    ($expression: expr) => {};
+    ($($argument: tt),+ $(,)?) => {};
 }
 #[macro_export]
 #[cfg(all(debug_assertions, feature = "enable"))]
@@ -73,11 +75,19 @@ macro_rules! ensure_always {
             $crate::breakpoint!();
         }
     };
+    ($expression: expr, $($argument: tt),+ $(,)?) => {
+        if !$expression {
+            $crate::_internal::_error!($($argument),+);
+            $crate::breakpoint!();
+        }
+    };
 }
 
 /// When enabled, will pause execution with a break point when expression is false
 ///
 /// Will only break once per program run
+///
+/// Can optionally log error messages when the tracing crate is used
 ///
 /// Requires Nightly Rust
 ///
@@ -85,17 +95,18 @@ macro_rules! ensure_always {
 ///
 /// ```rust
 /// unbug::ensure!(false);
+/// unbug::ensure!(false, "some message to log before breaking");
 /// ```
 #[macro_export]
 #[cfg(not(all(debug_assertions, feature = "enable")))]
 macro_rules! ensure {
-    ($expression: expr) => {};
+    ($($argument: tt),+ $(,)?) => {};
 }
 #[macro_export]
 #[cfg(all(debug_assertions, feature = "enable"))]
 macro_rules! ensure {
-    ($expression: expr) => {
-        $crate::_internal::_once!($crate::ensure_always!($expression))
+    ($($argument: tt),+ $(,)?) => {
+        $crate::_internal::_once!($crate::ensure_always!($($argument),+))
     };
 }
 
