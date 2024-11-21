@@ -101,7 +101,8 @@ macro_rules! breakpoint {
 #[macro_export]
 #[cfg(not(all(debug_assertions, feature = "enable")))]
 macro_rules! ensure_always {
-    ($($argument: tt),+ $(,)?) => {};
+    ($expression: expr) => {};
+    ($expression: expr, $($argument: tt),+ $(,)?) => {};
 }
 #[macro_export]
 #[cfg(all(debug_assertions, feature = "enable"))]
@@ -137,13 +138,17 @@ macro_rules! ensure_always {
 #[macro_export]
 #[cfg(not(all(debug_assertions, feature = "enable")))]
 macro_rules! ensure {
-    ($($argument: tt),+ $(,)?) => {};
+    ($expression: expr) => {};
+    ($expression: expr, $($argument: tt),+ $(,)?) => {};
 }
 #[macro_export]
 #[cfg(all(debug_assertions, feature = "enable"))]
 macro_rules! ensure {
-    ($($argument: tt),+ $(,)?) => {
-        $crate::_internal::_once!($crate::ensure_always!($($argument),+))
+    ($expression: expr) => {
+        $crate::_internal::_once!($crate::ensure_always!($expression))
+    };
+    ($expression: expr, $($argument: tt),+ $(,)?) => {
+        $crate::_internal::_once!($crate::ensure_always!($expression, $($argument),+))
     };
 }
 
