@@ -1,9 +1,3 @@
-#![cfg_attr(
-    all(debug_assertions, feature = "dev_debug",),
-    feature(core_intrinsics),
-    allow(internal_features)
-)]
-
 use unbug::prelude::*;
 
 fn try_some_option(in_opt: Option<()>) {

@@ -27,7 +27,7 @@ pub mod _internal {
 
 /// When enabled, will pause execution with a break point
 ///
-/// Requires Nightly Rust
+/// Platforms other than x86, x86_64, and ARM64 Require Nightly Rust and the core_intrinsics feature
 ///
 /// # Examples
 ///
@@ -85,16 +85,18 @@ macro_rules! breakpoint {
 
 /// When enabled, will pause execution with a break point when expression is false
 ///
-/// Can optionally log error messages when the tracing crate is used
-///
 /// Will break on every execution
 ///
-/// Requires Nightly Rust
+/// additional arguments are processed by Tracing's error! macro (Tracing required)
+///
+/// Platforms other than x86, x86_64, and ARM64 Require Nightly Rust and the core_intrinsics feature
 ///
 /// # Examples
 ///
 /// ```rust
 /// unbug::ensure_always!(false);
+/// unbug::ensure_always!(false, "some message to log before breaking");
+/// unbug::ensure_always!(false, "a formatted message to log {:?}", some_var);
 /// ```
 #[macro_export]
 #[cfg(not(all(debug_assertions, feature = "enable")))]
@@ -121,15 +123,16 @@ macro_rules! ensure_always {
 ///
 /// Will only break once per program run
 ///
-/// Can optionally log error messages when the tracing crate is used
+/// additional arguments are processed by Tracing's error! macro (Tracing required)
 ///
-/// Requires Nightly Rust
+/// Platforms other than x86, x86_64, and ARM64 Require Nightly Rust and the core_intrinsics feature
 ///
 /// # Examples
 ///
 /// ```rust
 /// unbug::ensure!(false);
 /// unbug::ensure!(false, "some message to log before breaking");
+/// unbug::ensure!(false, "a formatted message to log {:?}", some_var);
 /// ```
 #[macro_export]
 #[cfg(not(all(debug_assertions, feature = "enable")))]
@@ -148,15 +151,13 @@ macro_rules! ensure {
 ///
 /// Will break on every execution
 ///
+/// arguments are processed by Tracing's error! macro (Tracing required)
+///
 /// When disabled, will log an error
 ///
 /// Will log on every execution
 ///
-/// arguments are processed by tracing's error! macro
-///
-/// Requires Nightly Rust
-///
-/// Requires Tracing logging for error messages
+/// Platforms other than x86, x86_64, and ARM64 Require Nightly Rust and the core_intrinsics feature
 ///
 /// # Examples
 ///
@@ -184,15 +185,13 @@ macro_rules! fail_always {
 ///
 /// Will only break once per program run
 ///
+/// arguments are processed by Tracing's error! macro (Tracing required)
+///
 /// When disabled, will log an error
 ///
 /// Will log once per program run
 ///
-/// arguments are processed by Tracing's error! macro
-///
-/// Requires Nightly Rust
-///
-/// Requires Tracing logging for error messages
+/// Platforms other than x86, x86_64, and ARM64 Require Nightly Rust and the core_intrinsics feature
 ///
 /// # Examples
 ///
