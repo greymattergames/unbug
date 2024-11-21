@@ -54,14 +54,14 @@ macro_rules! breakpoint {
 }
 #[macro_export]
 #[cfg(all(
-    any(target_arch = "arm", target_arch = "aarch64"),
+    target_arch = "aarch64",
     debug_assertions,
     feature = "enable"
 ))]
 macro_rules! breakpoint {
     () => {
         unsafe {
-            ::core::arch::asm!("brk #1");
+            ::core::arch::asm!("brk#0xF000\nnop");
         }
     };
 }
@@ -70,7 +70,6 @@ macro_rules! breakpoint {
     not(any(
         target_arch = "x86",
         target_arch = "x86_64",
-        target_arch = "arm",
         target_arch = "aarch64",
     )),
     debug_assertions,
