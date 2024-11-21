@@ -2,10 +2,7 @@ use unbug::prelude::*;
 
 fn try_some_option(in_opt: Option<()>) {
     let Some(_out_var) = in_opt else {
-        fail_always!(
-            "fail_always! can also be formatted - in_opt was: {:?}",
-            in_opt
-        );
+        fail_always!("fail_always! can also be formatted {:?}", in_opt);
         return;
     };
 }
@@ -18,6 +15,7 @@ fn main() {
     for i in 0..5 {
         ensure!(false);
         ensure!(false, "ensure messages can be logged during development");
+        ensure!(i % 2 == 0, "ensure messages can be formatted {}", i,);
         ensure_always!(i % 2 == 0);
 
         fail!("fail! will happen only once");
