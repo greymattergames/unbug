@@ -145,10 +145,17 @@ macro_rules! ensure {
 #[cfg(all(debug_assertions, feature = "enable"))]
 macro_rules! ensure {
     ($expression: expr) => {
-        $crate::_internal::_once!($crate::ensure_always!($expression))
+        if !$expression {
+            $crate::_internal::_once!($crate::breakpoint!());
+        }
     };
     ($expression: expr, $($argument: tt),+ $(,)?) => {
-        $crate::_internal::_once!($crate::ensure_always!($expression, $($argument),+))
+        if !$expression {
+            $crate::_internal::_once!({
+                $crate::_internal::_error!($($argument),+);
+                $crate::breakpoint!();
+            });
+        }
     };
 }
 
