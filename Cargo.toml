@@ -1,6 +1,6 @@
 [package]
 name = "unbug"
-version = "0.2.0"
+version = "0.3.0"
 edition = "2021"
 description = "A crate to programmatically invoke debugging breakpoints with helping macros"
 repository = "https://github.com/greymattergames/unbug"
