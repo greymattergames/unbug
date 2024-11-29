@@ -26,8 +26,26 @@ pub mod _internal {
     #[doc(hidden)]
     pub use super::_internal_once as _once;
 
+    #[cfg(not(feature = "no_cache_debugger"))]
     pub fn _is_debugger_present() -> bool {
-        pub use ::dbg_breakpoint::{ is_debugger_present, DebuggerPresence };
+        use ::core::sync::atomic::{AtomicBool, Ordering};
+
+        static DEBUGGER_CHECKED: AtomicBool = AtomicBool::new(false);
+        static DEBUGGER_ATTACHED: AtomicBool = AtomicBool::new(false);
+
+        if !DEBUGGER_CHECKED.swap(true, Ordering::Relaxed) {
+            DEBUGGER_ATTACHED.swap(check_debugger(), Ordering::Relaxed);
+        }
+
+        DEBUGGER_ATTACHED.load(Ordering::Relaxed)
+    }
+    #[cfg(feature = "no_cache_debugger")]
+    pub fn _is_debugger_present() -> bool {
+        check_debugger()
+    }
+
+    fn check_debugger() -> bool {
+        use ::dbg_breakpoint::{is_debugger_present, DebuggerPresence};
 
         let Some(DebuggerPresence::Detected) = is_debugger_present() else {
             return false;
@@ -52,10 +70,7 @@ macro_rules! breakpoint {
     () => {};
 }
 #[macro_export]
-#[cfg(all(
-    any(target_arch = "x86", target_arch = "x86_64"),
-    debug_assertions
-))]
+#[cfg(all(any(target_arch = "x86", target_arch = "x86_64"), debug_assertions))]
 macro_rules! breakpoint {
     () => {
         if $crate::_internal::_is_debugger_present() {
@@ -66,10 +81,7 @@ macro_rules! breakpoint {
     };
 }
 #[macro_export]
-#[cfg(all(
-    target_arch = "aarch64",
-    debug_assertions
-))]
+#[cfg(all(target_arch = "aarch64", debug_assertions))]
 macro_rules! breakpoint {
     () => {
         if $crate::_internal::_is_debugger_present() {
@@ -81,11 +93,7 @@ macro_rules! breakpoint {
 }
 #[macro_export]
 #[cfg(all(
-    not(any(
-        target_arch = "x86",
-        target_arch = "x86_64",
-        target_arch = "aarch64",
-    )),
+    not(any(target_arch = "x86", target_arch = "x86_64", target_arch = "aarch64",)),
     debug_assertions
 ))]
 macro_rules! breakpoint {
