@@ -13,7 +13,7 @@ This crate's internals are disabled by default, there are shims provided so brea
 
 > ### NOTICE
 >
-> Stable Rust is only supported on x86, x86_64, and ARM64
+> Stable Rust is only supported on x86, x86_64, and ARM64. Other targets require nightly Rust with the `breakpoint` feature enabled in your crate (`#![feature(breakpoint)]`).
 >
 > You must use the `enable` feature of this crate (deactivated by default) to activate the breakpoints. This crate cannot detect the presence of a debugger.
 
@@ -163,7 +163,7 @@ When debugging is active, controls for resume execution, step-over, and step-out
 #### If you are not using x86, x86_64, or ARM64:
 Including, but not limited to WASM, RISCV, PowerPC, and ARM32
 
-Nightly Rust and the experimental [`core_intrinsics`](https://doc.rust-lang.org/core/intrinsics/fn.breakpoint.html) feature need to be used.
+You'll need nightly Rust with the [`breakpoint`](https://doc.rust-lang.org/core/arch/fn.breakpoint.html) feature enabled.
 
 To Enable Nightly Rust:
 
@@ -179,20 +179,18 @@ rustup install nightly
 rustup default nightly
 ```
 
-enable the core_intrinsics feature in the root of your crate (`src/main.rs` or `src/lib.rs`):
+enable the `breakpoint` feature in the root of your crate (`src/main.rs` or `src/lib.rs`):
 
 `src/main.rs`:
 ```rust
 #![cfg_attr(
-    // this configuration will conditionally activate core_intrinsics
+    // this configuration will conditionally activate the breakpoint feature
     // only when in a dev build and your debug feature is active
     all(
         debug_assertions,
         feature = "my_debug_feature",
     ),
-    feature(core_intrinsics),
-    // Optionally allow internal_features to suppress the warning
-    allow(internal_features),
+    feature(breakpoint)
 )]
 ```
 

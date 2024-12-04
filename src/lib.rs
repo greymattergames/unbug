@@ -27,7 +27,7 @@ pub mod _internal {
 
 /// When enabled, will pause execution with a break point
 ///
-/// Platforms other than x86, x86_64, and ARM64 Require Nightly Rust and the core_intrinsics feature
+/// Platforms other than x86, x86_64, and ARM64 require Nightly Rust and the `breakpoint` feature
 ///
 /// # Examples
 ///
@@ -78,7 +78,7 @@ macro_rules! breakpoint {
 macro_rules! breakpoint {
     () => {
         unsafe {
-            ::std::intrinsics::breakpoint();
+            ::core::arch::breakpoint();
         }
     };
 }
