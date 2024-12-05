@@ -6,8 +6,7 @@
             "command": "build",
             "args": [
                 "--bin=unbug_basic_example",
-                "--package=unbug_basic_example",
-                "--features=dev_debug"
+                "--package=unbug_basic_example"
             ],
             "problemMatcher": [
                 "$rustc"
