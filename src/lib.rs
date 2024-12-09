@@ -1,5 +1,7 @@
 #![doc = include_str!("../README.md")]
 
+// mod debugger;
+
 #[doc(hidden)]
 pub mod _internal {
 
@@ -23,6 +25,34 @@ pub mod _internal {
     // macro_export will move the macro to the root module, thus it is necessary to use `super::` here
     #[doc(hidden)]
     pub use super::_internal_once as _once;
+
+    #[cfg(not(feature = "no_cache_debugger"))]
+    pub fn _is_debugger_present() -> bool {
+        use ::core::sync::atomic::{AtomicBool, Ordering};
+
+        static DEBUGGER_CHECKED: AtomicBool = AtomicBool::new(false);
+        static DEBUGGER_ATTACHED: AtomicBool = AtomicBool::new(false);
+
+        if !DEBUGGER_CHECKED.swap(true, Ordering::Relaxed) {
+            DEBUGGER_ATTACHED.swap(check_debugger(), Ordering::Relaxed);
+        }
+
+        DEBUGGER_ATTACHED.load(Ordering::Relaxed)
+    }
+    #[cfg(feature = "no_cache_debugger")]
+    pub fn _is_debugger_present() -> bool {
+        check_debugger()
+    }
+
+    fn check_debugger() -> bool {
+        use ::dbg_breakpoint::{is_debugger_present, DebuggerPresence};
+
+        let Some(DebuggerPresence::Detected) = is_debugger_present() else {
+            return false;
+        };
+
+        true
+    }
 }
 
 /// When enabled, will pause execution with a break point
@@ -35,50 +65,43 @@ pub mod _internal {
 /// unbug::breakpoint!();
 /// ```
 #[macro_export]
-#[cfg(not(all(debug_assertions, feature = "enable")))]
+#[cfg(not(debug_assertions))]
 macro_rules! breakpoint {
     () => {};
 }
 #[macro_export]
-#[cfg(all(
-    any(target_arch = "x86", target_arch = "x86_64"),
-    debug_assertions,
-    feature = "enable"
-))]
+#[cfg(all(any(target_arch = "x86", target_arch = "x86_64"), debug_assertions))]
 macro_rules! breakpoint {
     () => {
-        unsafe {
-            ::core::arch::asm!("int3;nop");
+        if $crate::_internal::_is_debugger_present() {
+            unsafe {
+                ::core::arch::asm!("int3;nop");
+            }
+        }
+    };
+}
+#[macro_export]
+#[cfg(all(target_arch = "aarch64", debug_assertions))]
+macro_rules! breakpoint {
+    () => {
+        if $crate::_internal::_is_debugger_present() {
+            unsafe {
+                ::core::arch::asm!("brk#0xF000\nnop");
+            }
         }
     };
 }
 #[macro_export]
 #[cfg(all(
-    target_arch = "aarch64",
-    debug_assertions,
-    feature = "enable"
+    not(any(target_arch = "x86", target_arch = "x86_64", target_arch = "aarch64",)),
+    debug_assertions
 ))]
 macro_rules! breakpoint {
     () => {
-        unsafe {
-            ::core::arch::asm!("brk#0xF000\nnop");
-        }
-    };
-}
-#[macro_export]
-#[cfg(all(
-    not(any(
-        target_arch = "x86",
-        target_arch = "x86_64",
-        target_arch = "aarch64",
-    )),
-    debug_assertions,
-    feature = "enable"
-))]
-macro_rules! breakpoint {
-    () => {
-        unsafe {
-            ::core::arch::breakpoint();
+        if $crate::_internal::_is_debugger_present() {
+            unsafe {
+                ::core::arch::breakpoint();
+            }
         }
     };
 }
@@ -99,13 +122,13 @@ macro_rules! breakpoint {
 /// unbug::ensure_always!(false, "a formatted message to log {:?}", some_var);
 /// ```
 #[macro_export]
-#[cfg(not(all(debug_assertions, feature = "enable")))]
+#[cfg(not(debug_assertions))]
 macro_rules! ensure_always {
     ($expression: expr) => {};
     ($expression: expr, $($argument: tt),+ $(,)?) => {};
 }
 #[macro_export]
-#[cfg(all(debug_assertions, feature = "enable"))]
+#[cfg(debug_assertions)]
 macro_rules! ensure_always {
     ($expression: expr) => {
         if !$expression {
@@ -136,13 +159,13 @@ macro_rules! ensure_always {
 /// unbug::ensure!(false, "a formatted message to log {:?}", some_var);
 /// ```
 #[macro_export]
-#[cfg(not(all(debug_assertions, feature = "enable")))]
+#[cfg(not(debug_assertions))]
 macro_rules! ensure {
     ($expression: expr) => {};
     ($expression: expr, $($argument: tt),+ $(,)?) => {};
 }
 #[macro_export]
-#[cfg(all(debug_assertions, feature = "enable"))]
+#[cfg(debug_assertions)]
 macro_rules! ensure {
     ($expression: expr) => {
         if !$expression {
@@ -178,14 +201,14 @@ macro_rules! ensure {
 /// unbug::fail_always!("failed to do something: {:?}", some_var);
 /// ```
 #[macro_export]
-#[cfg(not(all(debug_assertions, feature = "enable")))]
+#[cfg(not(debug_assertions))]
 macro_rules! fail_always {
     ($($argument: tt),+ $(,)?) => {
         $crate::_internal::_error!($($argument),+);
     };
 }
 #[macro_export]
-#[cfg(all(debug_assertions, feature = "enable"))]
+#[cfg(debug_assertions)]
 macro_rules! fail_always {
     ($($argument: tt),+ $(,)?) => {
         $crate::_internal::_error!($($argument),+);

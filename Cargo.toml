@@ -8,17 +8,19 @@ documentation = "https://docs.rs/unbug"
 license = "MIT OR Apache-2.0"
 keywords = ["debug", "debugging", "ensure", "assert", "breakpoint"]
 authors = [
-  "Brian Jesse <brian@greymattergames.net>",
+    "Brian Jesse <brian@greymattergames.net>",
+    "Scott Girton <scott@greymattergames.net>",
 ]
 categories = ["development-tools::debugging"]
 exclude = [".vscode/", "assets/"]
 
-[features]
-default = []
-enable = []
-
 [dependencies]
 tracing = "0.1"
+dbg_breakpoint = "0.1.1"
+
+[features]
+default = []
+no_cache_debugger = []
 
 [[example]]
 name = "basic"

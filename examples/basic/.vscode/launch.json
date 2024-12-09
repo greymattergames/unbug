@@ -9,8 +9,7 @@
                 "args": [
                     "build",
                     "--bin=unbug_basic_example",
-                    "--package=unbug_basic_example",
-                    "--features=dev_debug"
+                    "--package=unbug_basic_example"
                 ],
                 "filter": {
                     "name": "unbug_basic_example",
