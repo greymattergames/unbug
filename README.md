@@ -5,17 +5,17 @@
 </p>
 <h1 align="center">Unbug</h1>
 
-A crate to programmatically invoke debugging breakpoints with helping macros.
+Debug breakpoint assertions for Rust.
 
 These macros are designed to help developers catch errors during debugging sessions that would otherwise be a panic (which may not be desirable in certain contexts) or simply a log message (which may go unnoticed).
 
-This crate's internals are disabled by default, there are shims provided so breakpoints will not be compiled outside of a debugging context. This means that the macros in this crate can be used freely throughout your code without having to conditionally compile them out yourself.
+Shims are provided so breakpoints will not be compiled in release builds. This means that the macros in this crate can be used freely throughout your code without having to conditionally compile them out yourself.
 
 > ### NOTICE
 >
-> Stable Rust is only supported on x86, x86_64, and ARM64. Other targets require nightly Rust with the `breakpoint` feature enabled in your crate (`#![feature(breakpoint)]`).
+> Stable Rust is only supported on x86, x86_64, and ARM64.
 >
-> You must use the `enable` feature of this crate (deactivated by default) to activate the breakpoints. This crate cannot detect the presence of a debugger.
+> Other targets require nightly Rust with the `breakpoint` feature enabled in your crate (`#![feature(breakpoint)]`).
 
 Error messages are logged when used in conjuction with [Tracing](https://github.com/tokio-rs/tracing)
 
@@ -35,6 +35,7 @@ for i in 0..5 {
     // when the expression argument is false
     unbug::ensure!(false);
     unbug::ensure!(false, "Ensure can take an optional log message");
+    // ensure! messages will not be compiled into release builds
     unbug::ensure!(false, "{}", i);
 
     // ensure_always! will trigger the debugger every time
@@ -52,6 +53,7 @@ for i in 0..5 {
     }
 
     let Some(_out_var) = some_option else {
+        // fail! and fail_always! will continue to log a message in release builds
         unbug::fail_always!("fail_always! will trigger every time");
     };
 }
@@ -63,18 +65,15 @@ for i in 0..5 {
 Prepare your environment for debugging Rust.
 > If you are using VSCode you will need the [Rust Analyzer](https://marketplace.visualstudio.com/items?itemName=rust-lang.rust-analyzer) and [Code LLDB](https://marketplace.visualstudio.com/items?itemName=vadimcn.vscode-lldb)  (Linux/Mac) or the [C/C++](https://marketplace.visualstudio.com/items?itemName=ms-vscode.cpptools) (Windows) extensions. [See Microsoft's Documentation on Rust Debugging in VSCode](https://code.visualstudio.com/docs/languages/rust#_debugging).
 
-__1.__ Create a debug feature in your project that will only be active in the context of a debugger, i.e. not enabled by default.
+__1.__ Add Unbug to your project's dependencies
 
 `Cargo.toml`:
 ```toml
-[features]
-default = []
-my_debug_feature = [
-    "unbug/enable"
-]
+[dependencies]
+unbug = "0.4"
 ```
 
-__2.__ Pass your feature flag to cargo during your debug build.
+__2.__ Set up a debug launch configuration
 
 Sample VSCode `.vscode/launch.json` with LLDB (Linux/Mac):
 ```json
@@ -89,8 +88,7 @@ Sample VSCode `.vscode/launch.json` with LLDB (Linux/Mac):
                 "args": [
                     "build",
                     "--bin=my_project",
-                    "--package=my_project",
-                    "--features=my_debug_feature"
+                    "--package=my_project"
                 ],
                 "filter": {
                     "name": "my_project",
@@ -135,8 +133,7 @@ and complimentary `.vscode/tasks.json`
 			"command": "build",
 			"args": [
 				"--bin=my_project",
-				"--package=my_project",
-				"--features=my_debug_feature"
+				"--package=my_project"
 			],
 			"problemMatcher": [
 				"$rustc"
@@ -160,7 +157,7 @@ launch configurations can be now found in the dropdown menu next to the green "S
 When debugging is active, controls for resume execution, step-over, and step-out are at the top of the window under the search field.
 
 
-#### If you are not using x86, x86_64, or ARM64:
+### If you are not using x86, x86_64, or ARM64
 Including, but not limited to WASM, RISCV, PowerPC, and ARM32
 
 You'll need nightly Rust with the [`breakpoint`](https://doc.rust-lang.org/core/arch/fn.breakpoint.html) feature enabled.
@@ -183,19 +180,20 @@ enable the `breakpoint` feature in the root of your crate (`src/main.rs` or `src
 
 `src/main.rs`:
 ```rust
-#![cfg_attr(
-    // this configuration will conditionally activate the breakpoint feature
-    // only when in a dev build and your debug feature is active
-    all(
-        debug_assertions,
-        feature = "my_debug_feature",
-    ),
-    feature(breakpoint)
-)]
+// this configuration will conditionally activate the breakpoint feature only in a dev build
+#![cfg_attr(debug_assertions, feature(breakpoint))]
 ```
 
-
 Additonally, debugging may not land on the macro statements themselves. This can have the consequence that the debgger may pause on an internal module. To avoid this, `return` or `continue` immediately following a macro invocation. Alternatively, use your debugger's "step-out" feature until you reenter the scope of your code.
+
+### Late attach debugging support
+
+By default this crate assumes that the debugger is attached to the process as soon as execution begins. This means that the debugger detection cache is populated when the first breakpoint occurs. If a debugger is not attached before then, Unbug will not fire breakpoints for the rest of that execution session. If you plan on attaching to a process late you can use the `no_cache_debugger` feature to check for the presence of a debugger every time a breakpoint is called. This will incur a runtime cost which may significantly impact performance on some platforms. To enable this feature add it to `Cargo.toml`:
+
+```toml
+[features]
+default = ["unbug/no_cache_debugger"]
+```
 
 ## License
 
