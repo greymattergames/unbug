@@ -20,13 +20,17 @@ pub mod _internal {
     }
 
     #[doc(hidden)]
+    #[cfg(feature = "tracing")]
     pub use tracing::error as _error;
+    #[doc(hidden)]
+    #[cfg(not(feature = "tracing"))]
+    pub use std::eprintln as _error;
 
     // macro_export will move the macro to the root module, thus it is necessary to use `super::` here
     #[doc(hidden)]
     pub use super::_internal_once as _once;
 
-    #[cfg(not(feature = "no_cache_debugger"))]
+    #[cfg(feature = "cache_debugger")]
     pub fn _is_debugger_present() -> bool {
         use ::core::sync::atomic::{AtomicBool, Ordering};
 
@@ -39,11 +43,12 @@ pub mod _internal {
 
         DEBUGGER_ATTACHED.load(Ordering::Relaxed)
     }
-    #[cfg(feature = "no_cache_debugger")]
+    #[cfg(not(feature = "cache_debugger"))]
     pub fn _is_debugger_present() -> bool {
         check_debugger()
     }
 
+    #[cfg(feature = "check_debugger")]
     fn check_debugger() -> bool {
         use ::dbg_breakpoint::{is_debugger_present, DebuggerPresence};
 
@@ -53,8 +58,17 @@ pub mod _internal {
 
         true
     }
+    #[cfg(not(feature = "check_debugger"))]
+    fn check_debugger() -> bool {
+        true
+    }
 }
 
+#[macro_export]
+#[cfg(not(debug_assertions))]
+macro_rules! breakpoint {
+    () => {};
+}
 /// When enabled, will pause execution with a break point
 ///
 /// Platforms other than x86, x86_64, and ARM64 require Nightly Rust and the `breakpoint` feature
@@ -64,11 +78,6 @@ pub mod _internal {
 /// ```rust
 /// unbug::breakpoint!();
 /// ```
-#[macro_export]
-#[cfg(not(debug_assertions))]
-macro_rules! breakpoint {
-    () => {};
-}
 #[macro_export]
 #[cfg(all(any(target_arch = "x86", target_arch = "x86_64"), debug_assertions))]
 macro_rules! breakpoint {
@@ -80,6 +89,15 @@ macro_rules! breakpoint {
         }
     };
 }
+/// When enabled, will pause execution with a break point
+///
+/// Platforms other than x86, x86_64, and ARM64 require Nightly Rust and the `breakpoint` feature
+///
+/// # Examples
+///
+/// ```rust
+/// unbug::breakpoint!();
+/// ```
 #[macro_export]
 #[cfg(all(target_arch = "aarch64", debug_assertions))]
 macro_rules! breakpoint {
@@ -91,6 +109,15 @@ macro_rules! breakpoint {
         }
     };
 }
+/// When enabled, will pause execution with a break point
+///
+/// Platforms other than x86, x86_64, and ARM64 require Nightly Rust and the `breakpoint` feature
+///
+/// # Examples
+///
+/// ```rust
+/// unbug::breakpoint!();
+/// ```
 #[macro_export]
 #[cfg(all(
     not(any(target_arch = "x86", target_arch = "x86_64", target_arch = "aarch64",)),
@@ -122,12 +149,6 @@ macro_rules! breakpoint {
 /// unbug::ensure_always!(false, "a formatted message to log {:?}", some_var);
 /// ```
 #[macro_export]
-#[cfg(not(debug_assertions))]
-macro_rules! ensure_always {
-    ($expression: expr) => {};
-    ($expression: expr, $($argument: tt),+ $(,)?) => {};
-}
-#[macro_export]
 #[cfg(debug_assertions)]
 macro_rules! ensure_always {
     ($expression: expr) => {
@@ -141,6 +162,12 @@ macro_rules! ensure_always {
             $crate::breakpoint!();
         }
     };
+}
+#[macro_export]
+#[cfg(not(debug_assertions))]
+macro_rules! ensure_always {
+    ($expression: expr) => {};
+    ($expression: expr, $($argument: tt),+ $(,)?) => {};
 }
 
 /// When enabled, will pause execution with a break point when expression is false
@@ -159,12 +186,6 @@ macro_rules! ensure_always {
 /// unbug::ensure!(false, "a formatted message to log {:?}", some_var);
 /// ```
 #[macro_export]
-#[cfg(not(debug_assertions))]
-macro_rules! ensure {
-    ($expression: expr) => {};
-    ($expression: expr, $($argument: tt),+ $(,)?) => {};
-}
-#[macro_export]
 #[cfg(debug_assertions)]
 macro_rules! ensure {
     ($expression: expr) => {
@@ -180,6 +201,12 @@ macro_rules! ensure {
             });
         }
     };
+}
+#[macro_export]
+#[cfg(not(debug_assertions))]
+macro_rules! ensure {
+    ($expression: expr) => {};
+    ($expression: expr, $($argument: tt),+ $(,)?) => {};
 }
 
 /// When enabled, will log an error and pause execution
@@ -201,18 +228,18 @@ macro_rules! ensure {
 /// unbug::fail_always!("failed to do something: {:?}", some_var);
 /// ```
 #[macro_export]
-#[cfg(not(debug_assertions))]
-macro_rules! fail_always {
-    ($($argument: tt),+ $(,)?) => {
-        $crate::_internal::_error!($($argument),+);
-    };
-}
-#[macro_export]
 #[cfg(debug_assertions)]
 macro_rules! fail_always {
     ($($argument: tt),+ $(,)?) => {
         $crate::_internal::_error!($($argument),+);
         $crate::breakpoint!();
+    };
+}
+#[macro_export]
+#[cfg(not(debug_assertions))]
+macro_rules! fail_always {
+    ($($argument: tt),+ $(,)?) => {
+        $crate::_internal::_error!($($argument),+);
     };
 }
 
@@ -242,5 +269,58 @@ macro_rules! fail {
 }
 
 pub mod prelude {
-    pub use super::{breakpoint, ensure, ensure_always, fail, fail_always};
+    // using the dev feature to trick rust analyzer into defaulting to the non-test exports
+    // when all features are active
+    #[cfg(any(feature = "rust_analyzer", not(any(test, feature = "testing"))))]
+    pub use super::{
+        breakpoint,
+        ensure,
+        ensure_always,
+        fail,
+        fail_always,
+    };
+
+    #[cfg(all(not(feature = "rust_analyzer"), any(test, feature = "testing")))]
+    pub use std::{
+        panic as breakpoint,
+        assert as ensure,
+        assert as ensure_always,
+        panic as fail,
+        panic as fail_always,
+    };
+}
+
+#[cfg(test)]
+mod test {
+    #![allow(clippy::assertions_on_constants)]
+
+    #[test]
+    #[should_panic]
+    fn breakpoint_should_panic_in_test() {
+        super::prelude::breakpoint!();
+    }
+
+    #[test]
+    #[should_panic]
+    fn ensure_should_panic_in_test() {
+        super::prelude::ensure!(false, "ensure should panic");
+    }
+
+    #[test]
+    #[should_panic]
+    fn ensure_always_should_panic_in_test() {
+        super::prelude::ensure_always!(false, "ensure_always should panic");
+    }
+
+    #[test]
+    #[should_panic]
+    fn fail_should_panic_in_test() {
+        super::prelude::fail!("fail should panic");
+    }
+
+    #[test]
+    #[should_panic]
+    fn fail_always_should_panic_in_test() {
+        super::prelude::fail_always!("fail_always should panic");
+    }
 }

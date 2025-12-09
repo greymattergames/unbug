@@ -30,3 +30,54 @@ fn main() {
         try_some_option(None);
     }
 }
+
+// In order to have unbug panic in tests, you will need to activate the `testing` feature,
+// See this example's Cargo.toml
+#[cfg(test)]
+mod test {
+    #![allow(clippy::assertions_on_constants)]
+
+    use super::*;
+
+    #[test]
+    #[should_panic]
+    fn main_should_panic() {
+        main();
+    }
+
+    #[test]
+    #[should_panic]
+    fn try_some_option_should_panic() {
+        try_some_option(None);
+    }
+
+    #[test]
+    #[should_panic]
+    fn breakpoint_should_panic_in_test() {
+        breakpoint!();
+    }
+
+    #[test]
+    #[should_panic]
+    fn ensure_should_panic_in_test() {
+        ensure!(false, "ensure should panic");
+    }
+
+    #[test]
+    #[should_panic]
+    fn ensure_always_should_panic_in_test() {
+        ensure_always!(false, "ensure_always should panic");
+    }
+
+    #[test]
+    #[should_panic]
+    fn fail_should_panic_in_test() {
+        fail!("fail should panic");
+    }
+
+    #[test]
+    #[should_panic]
+    fn fail_always_should_panic_in_test() {
+        fail_always!("fail_always should panic");
+    }
+}

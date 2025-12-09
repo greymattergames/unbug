@@ -1,7 +1,7 @@
 [package]
 name = "unbug"
 version = "0.4.0"
-edition = "2021"
+edition = "2024"
 description = "A crate to programmatically invoke debugging breakpoints with helping macros"
 repository = "https://github.com/greymattergames/unbug"
 documentation = "https://docs.rs/unbug"
@@ -13,20 +13,44 @@ authors = [
 ]
 categories = ["development-tools::debugging"]
 exclude = [".vscode/", "assets/"]
+autoexamples = false
 
-[dependencies]
-tracing = "0.1"
-dbg_breakpoint = "0.1.1"
+[dependencies.dbg_breakpoint]
+version = "0.1.1"
+optional = true
+
+[dependencies.tracing]
+version = "0.1"
+optional = true
 
 [features]
-default = []
-no_cache_debugger = []
+default = [
+    "tracing",
+    "check_debugger",
+    "cache_debugger",
+]
+check_debugger = ["dep:dbg_breakpoint"]
+tracing = ["dep:tracing"]
+cache_debugger = []
+testing = []
 
-[[example]]
-name = "basic"
-path = "examples/basic/"
+# internal feature to coerce rust analyzer into activating non-test exports
+rust_analyzer = []
+
+[lib]
+doctest = false
+
+# [[example]]
+# name = "basic"
+# path = "examples/basic/src/main.rs"
 
 [workspace]
 members = [
     "examples/*",
 ]
+
+[profile.dev]
+opt-level = 1
+
+[profile.dev.package."*"]
+opt-level = 3
