@@ -1,0 +1,37 @@
+[package]
+name = "unbug_assert"
+documentation = "https://docs.rs/unbug_assert"
+description = "A crate to programmatically invoke debugging breakpoints with helping macros"
+version.workspace = true
+edition.workspace = true
+repository.workspace = true
+license.workspace = true
+keywords.workspace = true
+authors.workspace = true
+categories.workspace = true
+
+[dependencies.dbg_breakpoint]
+workspace = true
+optional = true
+
+[dependencies.tracing]
+workspace = true
+optional = true
+
+[features]
+default = [
+    "tracing",
+    "check_debugger",
+    "cache_debugger",
+]
+check_debugger = ["dep:dbg_breakpoint"]
+tracing = ["dep:tracing"]
+cache_debugger = []
+testing = []
+
+# feature to coerce rust analyzer into activating non-test exports
+rust_analyzer = []
+
+[lib]
+doctest = false
+
