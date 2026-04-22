@@ -11,6 +11,12 @@ These macros are designed to help developers catch errors during debugging sessi
 
 Shims are provided so breakpoints will not be compiled in release builds. This means that the macros in this crate can be used freely throughout your code without having to conditionally compile them out yourself.
 
+> [!NOTE]
+>
+> Unbug was developed for our upcoming multiplayer automation game, Computronium.
+>
+> Learn more at https://greymattergames.com
+
 ## Examples
 
 # [![VSCode debugging example](https://raw.githubusercontent.com/greymattergames/unbug/master/assets/debug.png)](https://github.com/greymattergames/unbug/blob/master/examples/basic/src/main.rs)
