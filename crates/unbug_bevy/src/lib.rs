@@ -61,6 +61,5 @@ impl<T> DebugFailOption<T> for Option<T> {
 
 pub mod prelude {
     pub use super::*;
-    pub use ::unbug_assert::prelude::*;
 }
 
