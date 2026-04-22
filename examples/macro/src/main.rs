@@ -1,5 +1,42 @@
 use unbug::prelude::*;
 
+// These are just example failables to use
+fn get_result(succeed: bool) -> Result<String, String> {
+    if succeed {
+        return Ok("Some important value".to_string());
+    }
+
+    Err("I had a failure".into())
+}
+
+fn get_option(succeed: bool) -> Option<String> {
+    if succeed {
+        return Some("Some important value".to_string());
+    }
+
+    None
+}
+
+struct Uncertain;
+
+impl Uncertain {
+    pub fn observe(&self, succeed: bool) -> Option<String> {
+        if succeed {
+            return Some("Success!".into());
+        }
+
+        None
+    }
+}
+
+fn get_uncertain(succeed: bool) -> Result<Uncertain, String> {
+    if succeed {
+        return Ok(Uncertain);
+    }
+
+    Err("Failed to succeed".into())
+}
+
 // all invocations of the try-operator (?) will have breakpoints attached
 // in a function annotated with the debug_fail macro
 #[debug_fail]
@@ -21,7 +58,9 @@ fn main() -> Result<(), String> {
     Ok(())
 }
 
-// Unbug macro will expect `.on_fail` and `.try_to_result`
+// The traits and infrastructure below are necessary to use the macro.
+
+// The debug_fail macro will expect that `.on_fail` and `.try_to_result`
 // exists on both Result and Option types
 // You will have to construct these trait extensions with your error type
 
@@ -71,41 +110,5 @@ impl<T> DebugFailOption<T> for Option<T> {
     fn try_to_result(self) -> Result<T, String> {
         self.ok_or(OPTION_ERR_MSG.to_string())
     }
-}
-
-fn get_result(succeed: bool) -> Result<String, String> {
-    if succeed {
-        return Ok("Some important value".to_string());
-    }
-
-    Err("I had a failure".into())
-}
-
-fn get_option(succeed: bool) -> Option<String> {
-    if succeed {
-        return Some("Some important value".to_string());
-    }
-
-    None
-}
-
-struct Uncertain;
-
-impl Uncertain {
-    pub fn observe(&self, succeed: bool) -> Option<String> {
-        if succeed {
-            return Some("Success!".into());
-        }
-
-        None
-    }
-}
-
-fn get_uncertain(succeed: bool) -> Result<Uncertain, String> {
-    if succeed {
-        return Ok(Uncertain);
-    }
-
-    Err("Failed to succeed".into())
 }
 

@@ -1,3 +1,5 @@
+#![doc = include_str!("../README.md")]
+
 pub use ::unbug_assert::_internal;
 
 pub mod prelude {

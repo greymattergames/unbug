@@ -1,0 +1,5 @@
+{
+    "rust-analyzer.cargo.features": "all",
+    // You need the following for the inline test runner to work, otherwise unbug's test feature will be overridden
+    "rust-analyzer.runnables.test.overrideCommand": ["cargo", "test", "--package", "${package}", "${target_arg}", "${target}"],
+}

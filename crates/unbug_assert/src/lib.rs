@@ -1,7 +1,3 @@
-#![doc = include_str!("../../../README.md")]
-
-// mod debugger;
-
 #[doc(hidden)]
 pub mod _internal {
 

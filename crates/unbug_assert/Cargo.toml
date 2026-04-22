@@ -1,7 +1,7 @@
 [package]
 name = "unbug_assert"
-documentation = "https://docs.rs/unbug_assert"
-description = "A crate to programmatically invoke debugging breakpoints with helping macros"
+description = "Core assertion library for Unbug"
+documentation = "https://docs.rs/unbug"
 version.workspace = true
 edition.workspace = true
 repository.workspace = true

@@ -11,8 +11,6 @@ These macros are designed to help developers catch errors during debugging sessi
 
 Shims are provided so breakpoints will not be compiled in release builds. This means that the macros in this crate can be used freely throughout your code without having to conditionally compile them out yourself.
 
-Unbug provides compatibility with [Tracing](https://github.com/tokio-rs/tracing) through the `tracing` feature (enabled by default)
-
 ## Examples
 
 # [![VSCode debugging example](https://raw.githubusercontent.com/greymattergames/unbug/master/assets/debug.png)](https://github.com/greymattergames/unbug/blob/master/examples/basic/src/main.rs)
@@ -22,10 +20,6 @@ Unbug provides compatibility with [Tracing](https://github.com/tokio-rs/tracing)
 ```rust
 // trigger the debugger
 unbug::breakpoint!();
-
-// Use the tracing feature and the tracing_subscriber crate
-// to format log messages
-tracing_subscriber::fmt::init();
 
 for i in 0..5 {
     // ensure! will only trigger the debugger once
@@ -57,15 +51,7 @@ for i in 0..5 {
 
 ```
 
-### Ergonomic error handling macro
-
-> [!NOTE]
-> The Bevy game engine integration (`unbug-bevy`) provides the required Option and Result traits using the BevyError type.
->
-> Option types processed by the macro will be converted to Results with a BevyError Err type
->
-> To use the macro without Bevy, you will have to implement traits with both the functions `.on_fail` and `.try_to_result` implemented for both Options and Results with your error type.
-> See the `macro` example for a sample implementation
+### debug_fail macro
 
 ```rust
 // activate the macro for the following function
@@ -97,6 +83,8 @@ fn my_system() -> Result {
 ## Usage
 
 Prepare your environment for debugging Rust.
+> [!IMPORTANT]
+>
 > If you are using VSCode you will need the [Rust Analyzer](https://marketplace.visualstudio.com/items?itemName=rust-lang.rust-analyzer) and [Code LLDB](https://marketplace.visualstudio.com/items?itemName=vadimcn.vscode-lldb)  (Linux/Mac) or the [C/C++](https://marketplace.visualstudio.com/items?itemName=ms-vscode.cpptools) (Windows) extensions. [See Microsoft's Documentation on Rust Debugging in VSCode](https://code.visualstudio.com/docs/languages/rust#_debugging).
 
 __1.__ Add Unbug to your project's dependencies
@@ -104,7 +92,7 @@ __1.__ Add Unbug to your project's dependencies
 `Cargo.toml`:
 ```toml
 [dependencies]
-unbug = "0.4"
+unbug = "0.5"
 ```
 
 __2.__ Set up a debug launch configuration
@@ -190,18 +178,93 @@ launch configurations can be now found in the dropdown menu next to the green "S
 
 When debugging is active, controls for resume execution, step-over, and step-out are at the top of the window under the search field.
 
-### `debug_fail` Macro
+## Features
 
-Unbug provides a handy `debug_fail` macro for use on functions. This macro will attach breakpoints automatically to all invocations the try-operator (`?`).
+### Tracing integration
+
+Cargo feature: `tracing` (enabled by default)
+
+Example: `examples/tracing`
+
+Provides compatibility with [Tracing](https://github.com/tokio-rs/tracing)
+
+Use the tracing_subscriber crate in your project to format log messages.
+
+```rust
+tracing_subscriber::fmt::init();
+```
+
+### Bevy integration
+
+Cargo feature: `bevy` (NOT enabled by default)
+
+Example: `examples/bevy`
+
+Add to your `Cargo.toml`:
+```toml
+[dependencies]
+unbug = "0.5"
+features = ["bevy"]
+```
+
+Provides compatibility with the [Bevy game engine](https://bevy.org) for `BevyError` support with the `macro` feature (see below)
+
+#### Supported bevy version
+
+|   Unbug   | Bevy |
+|-----------|------|
+| 0.5.0     | 0.18 |
+
+### debug_fail macro
+
+Cargo feature: `macro` (enabled by default)
+
+Example: `examples/macro`
+
+An easy way to trigger debug assertions via try-operator (`?`) usage.
+
+Add the `debug_fail` annotation to functions. This macro will attach breakpoints automatically to all invocations the try-operator (`?`).
 These breakpoints are triggered when the value of a Result is an `Err` or when the value of an Option is `None`.
 
 `fail_msg` can be added above expressions to add log messages during those breakpoints and these logs will be present in release builds.
 
 You can use `fail_ignore` to completely skip attaching a breakpoint.
 
-### If you are not using x86, x86_64, or ARM64
+> [!NOTE]
+> The Bevy game engine integration (with the `bevy` cargo feature) provides the required Option and Result traits using the BevyError type.
+>
+> Option types processed by the macro will be converted to Results with a BevyError Err type
+>
+> To use the macro without Bevy, you will have to implement traits with both the functions `.on_fail` and `.try_to_result` implemented for both Options and Results with your error type.
+> See the `macro` example for a sample implementation
 
-> [!ATTENTION]
+### Debugger presence detection
+
+Cargo feature: `check_debugger` (enabled by default)
+
+Unbug can detect if it is in a debugging session
+
+### Debugger presence cache
+
+Cargo feature: `cache_debugger` (enabled by default)
+
+Unbug will remember whether or not it is in a debug session and avoid repeated checks
+
+#### Late attach debugging support
+
+By default this crate assumes that the debugger is attached to the process as soon as execution begins. This means that the debugger detection cache is populated when the first breakpoint occurs. If a debugger is not attached before then, Unbug will not fire breakpoints for the rest of that execution session. If you plan on attaching to a process late you can disable default features and omit the `cache_debugger` feature to check for the presence of a debugger every time a breakpoint is called. This will incur a runtime cost which may significantly impact performance on some platforms.
+
+### (Experimental) testing support
+
+Cargo feature: `testing` (only used in tests - SEE EXAMPLE)
+
+Example: `examples/testing`
+
+Assertions can trigger test failures. There is extra scaffolding required in your project's `Cargo.toml`, See the example.
+
+### Other platforms
+
+> [!IMPORTANT]
 >
 > Stable Rust is only supported on x86, x86_64, and ARM64.
 >
@@ -234,15 +297,6 @@ enable the `breakpoint` feature in the root of your crate (`src/main.rs` or `src
 ```
 
 Additonally, debugging may not land on the macro statements themselves. This can have the consequence that the debgger may pause on an internal module. To avoid this, `return` or `continue` immediately following a macro invocation. Alternatively, use your debugger's "step-out" feature until you reenter the scope of your code.
-
-### Late attach debugging support
-
-By default this crate assumes that the debugger is attached to the process as soon as execution begins. This means that the debugger detection cache is populated when the first breakpoint occurs. If a debugger is not attached before then, Unbug will not fire breakpoints for the rest of that execution session. If you plan on attaching to a process late you can use the `no_cache_debugger` feature to check for the presence of a debugger every time a breakpoint is called. This will incur a runtime cost which may significantly impact performance on some platforms. To enable this feature add it to `Cargo.toml`:
-
-```toml
-[features]
-default = ["unbug/no_cache_debugger"]
-```
 
 ## License
 

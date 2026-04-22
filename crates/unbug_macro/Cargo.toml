@@ -1,7 +1,14 @@
 [package]
 name = "unbug_macro"
+description = "A proc macro for debug assertions from Unbug"
+documentation = "https://docs.rs/unbug"
 version.workspace = true
 edition.workspace = true
+repository.workspace = true
+license.workspace = true
+keywords.workspace = true
+authors.workspace = true
+categories.workspace = true
 
 [lib]
 proc-macro = true

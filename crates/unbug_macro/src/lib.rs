@@ -169,7 +169,10 @@ impl VisitMut for StripAttrsVisitor {
 }
 
 /// A proc macro to apply to a function that will set every invocation of the try-operator (`?`)
-/// To use a closure defined on Result and Option types called `on_fail` (defined in errors.rs)
+///
+/// To use a closure defined on Result and Option types called `on_fail` must be present
+///
+/// and `try_to_result` must be present for release builds
 ///
 /// ## Example:
 ///

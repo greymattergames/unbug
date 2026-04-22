@@ -8,9 +8,9 @@ exclude = [".vscode/", "assets/"]
 
 [package]
 name = "unbug"
-documentation = "https://docs.rs/unbug"
 description = "A crate to programmatically invoke debugging breakpoints with helping macros"
 autoexamples = false
+documentation = "https://docs.rs/unbug"
 version.workspace = true
 edition.workspace = true
 repository.workspace = true
@@ -52,14 +52,17 @@ path = "./"
 
 [workspace.dependencies.unbug_assert]
 path = "./crates/unbug_assert"
+version = "0.5.0"
 default-features = false
 
 [workspace.dependencies.unbug_bevy]
 path = "./crates/unbug_bevy"
+version = "0.5.0"
 default-features = false
 
 [workspace.dependencies.unbug_macro]
 path = "./crates/unbug_macro"
+version = "0.5.0"
 default-features = false
 
 [features]

@@ -1,13 +1,18 @@
 [package]
-name = "unbug_basic_example"
+name = "unbug_tracing_example"
 version = "1.0.0"
 edition.workspace = true
 publish = false
+
+[dependencies]
+tracing-subscriber = "0.3"
 
 [dependencies.unbug]
 path = "../../"
 default-features = false
 features = [
+    "tracing",
     "check_debugger",
     "cache_debugger",
 ]
+
