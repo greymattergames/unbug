@@ -1,0 +1,8 @@
+{
+    "rust-analyzer.cargo.features": "all",
+    // "rust-analyzer.check.command": "clippy",
+    "rust-analyzer.check.workspace": true,
+    "rust-analyzer.procMacro.enable": true,
+    // "rust-analyzer.check.features": null,
+    "rust-analyzer.runnables.test.overrideCommand": ["cargo", "test", "--package", "${package}", "${target_arg}", "${target}"],
+}

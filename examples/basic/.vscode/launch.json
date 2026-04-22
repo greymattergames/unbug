@@ -16,8 +16,9 @@
                     "kind": "bin"
                 }
             },
-            "cwd": "${workspaceFolder}",
+            "cwd": "${workspaceFolder}"
         },
+
         {
             "name": "Windows debug",
             "type": "cppvsdbg",
@@ -26,6 +27,20 @@
             "stopAtEntry": false,
             "cwd": "${workspaceRoot}",
             "preLaunchTask": "win_build_debug"
+        },
+
+        {
+            "name": "Linux debug",
+            "type": "lldb",
+            "preLaunchTask": "linux_build_debug",
+            "request": "launch",
+            "program": "${workspaceFolder}/target/debug/unbug_basic_example",
+            "sourceLanguages": ["rust"],
+            "args": [],
+            "cwd": "${workspaceFolder}",
+            "env": {
+                "LD_LIBRARY_PATH": "${workspaceFolder}/target/debug/deps:${env:LD_LIBRARY_PATH}"
+            }
         }
     ]
 }

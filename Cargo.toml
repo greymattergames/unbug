@@ -1,10 +1,28 @@
+[workspace]
+members = [
+    "crates/*",
+    "examples/*",
+]
+# default-members = ["crates/unbug_assert"]
+exclude = [".vscode/", "assets/"]
+
 [package]
 name = "unbug"
-version = "0.4.0"
-edition = "2021"
-description = "A crate to programmatically invoke debugging breakpoints with helping macros"
-repository = "https://github.com/greymattergames/unbug"
 documentation = "https://docs.rs/unbug"
+description = "A crate to programmatically invoke debugging breakpoints with helping macros"
+autoexamples = false
+version.workspace = true
+edition.workspace = true
+repository.workspace = true
+license.workspace = true
+keywords.workspace = true
+authors.workspace = true
+categories.workspace = true
+
+[workspace.package]
+version = "0.5.0"
+edition = "2024"
+repository = "https://github.com/greymattergames/unbug"
 license = "MIT OR Apache-2.0"
 keywords = ["debug", "debugging", "ensure", "assert", "breakpoint"]
 authors = [
@@ -12,21 +30,60 @@ authors = [
     "Scott Girton <scott@greymattergames.net>",
 ]
 categories = ["development-tools::debugging"]
-exclude = [".vscode/", "assets/"]
 
-[dependencies]
-tracing = "0.1"
+[dependencies.unbug_assert]
+workspace = true
+
+[dependencies.unbug_bevy]
+workspace = true
+optional = true
+
+[dependencies.unbug_macro]
+workspace = true
+optional = true
+
+[workspace.dependencies]
 dbg_breakpoint = "0.1.1"
+tracing = "0.1"
+bevy_ecs = "0.18"
+
+[workspace.dependencies.unbug]
+path = "./"
+
+[workspace.dependencies.unbug_assert]
+path = "./crates/unbug_assert"
+default-features = false
+
+[workspace.dependencies.unbug_bevy]
+path = "./crates/unbug_bevy"
+default-features = false
+
+[workspace.dependencies.unbug_macro]
+path = "./crates/unbug_macro"
+default-features = false
 
 [features]
-default = []
-no_cache_debugger = []
-
-[[example]]
-name = "basic"
-path = "examples/basic/"
-
-[workspace]
-members = [
-    "examples/*",
+default = [
+    "tracing",
+    "check_debugger",
+    "cache_debugger",
+    "macro",
 ]
+check_debugger = ["unbug_assert/check_debugger"]
+tracing = ["unbug_assert/tracing"]
+cache_debugger = ["unbug_assert/cache_debugger"]
+testing = ["unbug_assert/testing"]
+bevy = ["dep:unbug_bevy"]
+macro = ["dep:unbug_macro"]
+
+# feature to coerce rust analyzer into activating non-test exports
+rust_analyzer = ["unbug_assert/rust_analyzer"]
+
+[lib]
+doctest = false
+
+[profile.dev]
+opt-level = 1
+
+[profile.dev.package."*"]
+opt-level = 3

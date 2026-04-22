@@ -1,0 +1,17 @@
+[package]
+name = "unbug_bevy_example"
+version = "1.0.0"
+edition.workspace = true
+publish = false
+
+[dependencies]
+bevy_app = "0.18"
+bevy_ecs = "0.18"
+bevy_log = "0.18"
+
+[dependencies.unbug]
+path = "../../"
+features = [
+    "bevy",
+]
+

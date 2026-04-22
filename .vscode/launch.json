@@ -5,6 +5,7 @@
             "name": "LLDB debug example basic",
             "type": "lldb",
             "request": "launch",
+            "program": "${workspaceFolder}/target/debug/unbug_basic_example",
             "cargo": {
                 "args": [
                     "build",
@@ -16,8 +17,12 @@
                     "kind": "bin"
                 }
             },
-            "cwd": "${workspaceFolder}/examples/basic"
+            "cwd": "${workspaceFolder}/examples/basic",
+            "presentation": {
+                "group": "LLDB"
+            }
         },
+
         {
             "name": "Windows debug example basic",
             "type": "cppvsdbg",
@@ -25,7 +30,80 @@
             "program": "${workspaceRoot}/target/debug/unbug_basic_example.exe",
             "stopAtEntry": false,
             "cwd": "${workspaceRoot}/examples/basic",
-            "preLaunchTask": "win_build_debug"
-        }
+            "preLaunchTask": "win_build_debug",
+            "presentation": {
+                "group": "Windows"
+            }
+        },
+
+        {
+            "name": "LLDB debug example macro",
+            "type": "lldb",
+            "request": "launch",
+            "program": "${workspaceFolder}/target/debug/unbug_macro_example",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=unbug_macro_example",
+                    "--package=unbug_macro_example"
+                ],
+                "filter": {
+                    "name": "unbug_macro_example",
+                    "kind": "bin"
+                }
+            },
+            "cwd": "${workspaceFolder}/examples/macro",
+            "presentation": {
+                "group": "LLDB"
+            }
+        },
+
+        {
+            "name": "Windows debug example macro",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceRoot}/target/debug/unbug_macro_example.exe",
+            "stopAtEntry": false,
+            "cwd": "${workspaceRoot}/examples/macro",
+            "preLaunchTask": "win_build_debug",
+            "presentation": {
+                "group": "Windows"
+            }
+        },
+
+        {
+            "name": "LLDB debug example bevy",
+            "type": "lldb",
+            "request": "launch",
+            "program": "${workspaceFolder}/target/debug/unbug_bevy_example",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=unbug_bevy_example",
+                    "--package=unbug_bevy_example"
+                ],
+                "filter": {
+                    "name": "unbug_bevy_example",
+                    "kind": "bin"
+                }
+            },
+            "cwd": "${workspaceFolder}/examples/bevy",
+            "presentation": {
+                "group": "LLDB"
+            }
+        },
+
+        {
+            "name": "Windows debug example bevy",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceRoot}/target/debug/unbug_bevy_example.exe",
+            "stopAtEntry": false,
+            "cwd": "${workspaceRoot}/examples/bevy",
+            "preLaunchTask": "win_build_debug",
+            "presentation": {
+                "group": "Windows"
+            }
+        },
     ]
 }

@@ -1,0 +1,17 @@
+[package]
+name = "unbug_bevy"
+documentation = "https://docs.rs/unbug_bevy"
+description = "Bevy integration for the unbug debug assertion library"
+version.workspace = true
+edition.workspace = true
+repository.workspace = true
+license.workspace = true
+keywords.workspace = true
+authors.workspace = true
+categories.workspace = true
+
+[dependencies]
+bevy_ecs.workspace = true
+unbug_assert.workspace = true
+unbug_macro.workspace = true
+

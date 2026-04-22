@@ -1,0 +1,18 @@
+[package]
+name = "unbug_macro_example"
+version = "1.0.0"
+edition.workspace = true
+publish = false
+
+[dependencies]
+tracing-subscriber = "0.3"
+
+[dependencies.unbug]
+path = "../../"
+default-features = false
+features = [
+    "check_debugger",
+    "cache_debugger",
+    "macro",
+]
+

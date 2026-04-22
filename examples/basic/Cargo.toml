@@ -1,9 +1,31 @@
 [package]
 name = "unbug_basic_example"
 version = "1.0.0"
-edition = "2021"
+edition.workspace = true
 publish = false
 
-[dependencies]
-unbug = { path = "../../" }
-tracing-subscriber = "0.3"
+# [dependencies]
+# tracing-subscriber = "0.3"
+
+[dependencies.unbug]
+path = "../../"
+default-features = false
+features = [
+    # "tracing",
+    "check_debugger",
+    "cache_debugger",
+]
+
+# All of the following is necessary to activate unbug's panics during tests
+
+# HACK: Cargo libraries do not get --cfg test passed during tests
+# see: https://github.com/rust-lang/cargo/issues/2911
+[dev-dependencies]
+# replace `unbug_basic_example` with your package name
+unbug_basic_example = { path = ".", features = ["testing"] }
+
+[features]
+default = []
+testing = ["unbug/testing"]
+# this feature is needed to avoid "unreachable" warnings from rust-analyzer
+rust_analyzer = ["unbug/rust_analyzer"]

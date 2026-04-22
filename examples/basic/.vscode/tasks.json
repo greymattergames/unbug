@@ -16,6 +16,20 @@
                 "isDefault": true
             },
             "label": "win_build_debug",
+        },
+
+        {
+            "label": "linux_build_debug",
+            "type": "shell",
+            "command": "cargo",
+            "cwd": "${workspaceFolder}",
+            "args": [
+                "build",
+                "--bin=unbug_basic_example",
+                "--package=unbug_basic_example"
+            ],
+            "problemMatcher": [],
+            "group": "build"
         }
     ]
 }

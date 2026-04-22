@@ -11,23 +11,20 @@ These macros are designed to help developers catch errors during debugging sessi
 
 Shims are provided so breakpoints will not be compiled in release builds. This means that the macros in this crate can be used freely throughout your code without having to conditionally compile them out yourself.
 
-> ### NOTICE
->
-> Stable Rust is only supported on x86, x86_64, and ARM64.
->
-> Other targets require nightly Rust with the `breakpoint` feature enabled in your crate (`#![feature(breakpoint)]`).
-
-Error messages are logged when used in conjuction with [Tracing](https://github.com/tokio-rs/tracing)
+Unbug provides compatibility with [Tracing](https://github.com/tokio-rs/tracing) through the `tracing` feature (enabled by default)
 
 ## Examples
 
 # [![VSCode debugging example](https://raw.githubusercontent.com/greymattergames/unbug/master/assets/debug.png)](https://github.com/greymattergames/unbug/blob/master/examples/basic/src/main.rs)
 
+### Programmatic breakpoint assertions
+
 ```rust
 // trigger the debugger
 unbug::breakpoint!();
 
-// Use the tracing_subscriber crate to enable log messages
+// Use the tracing feature and the tracing_subscriber crate
+// to format log messages
 tracing_subscriber::fmt::init();
 
 for i in 0..5 {
@@ -58,6 +55,43 @@ for i in 0..5 {
     };
 }
 
+```
+
+### Ergonomic error handling macro
+
+> [!NOTE]
+> The Bevy game engine integration (`unbug-bevy`) provides the required Option and Result traits using the BevyError type.
+>
+> Option types processed by the macro will be converted to Results with a BevyError Err type
+>
+> To use the macro without Bevy, you will have to implement traits with both the functions `.on_fail` and `.try_to_result` implemented for both Options and Results with your error type.
+> See the `macro` example for a sample implementation
+
+```rust
+// activate the macro for the following function
+#[debug_fail]
+fn my_system() -> Result {
+    // all ? operators in this function will have breakpoints attached
+    let some_data = get_option()?;
+
+    // In addition to attaching a breakpoint
+    // expressions annotated with fail_msg will log an error message
+    // on failure (even in a release build)
+    #[fail_msg = "A message to log when the value is Err"]
+    let ok_data = get_result()?;
+
+    // All ? operators in the following expression will have
+    // the same error message
+    #[fail_msg = "A message to log when the value is Err"]
+    let other_ok_data = get_other_result()?.get_another()?;
+
+    // use fail_ignore to skip attaching breakpoints to
+    // invocations of the ? operator for the following expression
+    #[fail_ignore]
+    let ignore_data = get_result()?;
+
+    Ok(())
+}
 ```
 
 ## Usage
@@ -110,7 +144,7 @@ Sample VSCode `.vscode/launch.json` with msvc (Windows):
 {
     "version": "0.2.0",
     "configurations": [
-		{
+        {
             "name": "Windows debug",
             "type": "cppvsdbg",
             "request": "launch",
@@ -126,25 +160,25 @@ Sample VSCode `.vscode/launch.json` with msvc (Windows):
 and complimentary `.vscode/tasks.json`
 ```json
 {
-	"version": "2.0.0",
-	"tasks": [
-		{
-			"type": "cargo",
-			"command": "build",
-			"args": [
-				"--bin=my_project",
-				"--package=my_project"
-			],
-			"problemMatcher": [
-				"$rustc"
-			],
-			"group": {
-				"kind": "build",
-				"isDefault": true
-			},
-			"label": "win_build_debug"
-		}
-	]
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "type": "cargo",
+            "command": "build",
+            "args": [
+                "--bin=my_project",
+                "--package=my_project"
+            ],
+            "problemMatcher": [
+                "$rustc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "label": "win_build_debug"
+        }
+    ]
 }
 ```
 
@@ -156,8 +190,23 @@ launch configurations can be now found in the dropdown menu next to the green "S
 
 When debugging is active, controls for resume execution, step-over, and step-out are at the top of the window under the search field.
 
+### `debug_fail` Macro
+
+Unbug provides a handy `debug_fail` macro for use on functions. This macro will attach breakpoints automatically to all invocations the try-operator (`?`).
+These breakpoints are triggered when the value of a Result is an `Err` or when the value of an Option is `None`.
+
+`fail_msg` can be added above expressions to add log messages during those breakpoints and these logs will be present in release builds.
+
+You can use `fail_ignore` to completely skip attaching a breakpoint.
 
 ### If you are not using x86, x86_64, or ARM64
+
+> [!ATTENTION]
+>
+> Stable Rust is only supported on x86, x86_64, and ARM64.
+>
+> Other targets require nightly Rust with the `breakpoint` feature enabled in your crate (`#![feature(breakpoint)]`).
+
 Including, but not limited to WASM, RISCV, PowerPC, and ARM32
 
 You'll need nightly Rust with the [`breakpoint`](https://doc.rust-lang.org/core/arch/fn.breakpoint.html) feature enabled.

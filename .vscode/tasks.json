@@ -15,7 +15,22 @@
                 "kind": "build",
                 "isDefault": true
             },
-            "label": "win_build_debug",
+            "label": "win_build_example",
+        },
+        {
+            "label": "linux_build_example",
+            "type": "shell",
+            "command": "cargo",
+            "args": [
+                "build",
+                "--bin=unbug_basic_example",
+                "--package=unbug_basic_example"
+            ],
+            "env": {
+                "CARGO_MANIFEST_DIR": "${workspaceFolder}"
+            },
+            "problemMatcher": [],
+            "group": "build"
         }
     ]
 }
