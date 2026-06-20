@@ -217,9 +217,10 @@ Provides compatibility with the [Bevy game engine](https://bevy.org) for `BevyEr
 
 #### Supported bevy version
 
-|   Unbug   | Bevy |
-|-----------|------|
-| 0.5.0     | 0.18 |
+| Unbug | Bevy |
+|-------|------|
+|  0.6  | 0.19 |
+|  0.5  | 0.18 |
 
 ### debug_fail macro
 

@@ -5,9 +5,9 @@ edition.workspace = true
 publish = false
 
 [dependencies]
-bevy_app = "0.18"
-bevy_ecs = "0.18"
-bevy_log = "0.18"
+bevy_app = "0.19"
+bevy_ecs = "0.19"
+bevy_log = "0.19"
 
 [dependencies.unbug]
 path = "../../"
