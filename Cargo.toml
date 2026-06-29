@@ -20,7 +20,7 @@ authors.workspace = true
 categories.workspace = true
 
 [workspace.package]
-version = "0.5.0"
+version = "0.6.0"
 edition = "2024"
 repository = "https://github.com/greymattergames/unbug"
 license = "MIT OR Apache-2.0"
@@ -45,7 +45,7 @@ optional = true
 [workspace.dependencies]
 dbg_breakpoint = "0.1.1"
 tracing = "0.1"
-bevy_ecs = "0.18"
+bevy_ecs = "0.19"
 
 [workspace.dependencies.unbug]
 path = "./"
